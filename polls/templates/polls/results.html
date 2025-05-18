@@ -1,0 +1,44 @@
+{% extends "polls/base.html" %}
+
+{% block content %}
+<div class="results-container">
+    <h2>Results for: {{ poll.question }}</h2>
+    
+    {% if not poll.is_closed %}
+        {% if show_admin_stats %}
+        <div class="admin-notice">
+            <p>⚠️ You're viewing results as an admin (poll is still open)</p>
+        </div>
+        {% endif %}
+    {% else %}
+        <p>Poll is now closed</p>
+    {% endif %}
+    
+    <div class="results-grid">
+        {% for choice in choices %}
+        <div class="result-item">
+            <div class="choice-text">{{ choice.choice_text }}</div>
+            <div class="vote-count">{{ choice.votes }} vote{{ choice.votes|pluralize }}</div>
+            <div class="percentage-bar" style="width: {{ choice.votes_percentage }}%"></div>
+            <div class="percentage">{{ choice.votes_percentage }}%</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if user.is_admin %}
+    <div class="admin-details">
+        <h3>Voter Details</h3>
+        <ul>
+            {% for vote in poll.vote_set.all %}
+            <li>
+                {{ vote.user.username }} voted for {{ vote.choice.choice_text }}
+                <small>({{ vote.voted_at|timesince }} ago)</small>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'poll_list' %}" class="btn">Back to Polls</a>
+</div>
+{% endblock %}

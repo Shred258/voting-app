@@ -1,0 +1,30 @@
+{% extends "polls/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ poll.question }}</h2>
+    <p>Closes: {{ poll.closes_at }}</p>
+    
+    {% if user.is_admin %}
+    <div class="admin-preview">
+        <h4>Admin Preview (Current Votes)</h4>
+        <ul>
+            {% for choice in choices %}
+            <li>{{ choice.choice_text }}: {{ choice.votes }} votes</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for choice in choices %}
+        <div class="choice">
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">Submit Vote</button>
+    </form>
+</div>
+{% endblock %}

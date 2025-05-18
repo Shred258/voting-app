@@ -1,0 +1,19 @@
+{% extends "polls/base.html" %}
+
+{% block content %}
+<h2>Add Choices to: {{ poll.question }}</h2>
+
+<h3>Current Choices:</h3>
+<ul>
+    {% for choice in choices %}
+    <li>{{ choice.choice_text }}</li>
+    {% endfor %}
+</ul>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="add_another">Add Another Choice</button>
+    <button type="submit">Finish</button>
+</form>
+{% endblock %}
