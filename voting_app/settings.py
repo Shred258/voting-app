@@ -145,13 +145,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Add to the BOTTOM of settings.py
-if not os.environ.get('ADMIN_CREATED') and 'DATABASE_URL' in os.environ:
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-    if not User.objects.filter(username='Billy').exists():
-        User.objects.create_superuser(
-            username='Billy',
-            email='shred852@yahoo.com',
-            password='/.,;'  # Change this!
-        )
-    os.environ['ADMIN_CREATED'] = 'True'
+# Auto-admin creation (Render compatible)
+if 'RENDER' in os.environ:
+    from django.db.utils import OperationalError
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(username='Billy').exists():
+            print("Creating default admin user...")
+            User.objects.create_superuser(
+                username='Billy',
+                email='shred852@yahoo.com.com',
+                password='renderadmin123!'  # Change after first login
+            )
+            print("Admin user created successfully!")
+    except OperationalError:
+        print("Database not ready yet - admin creation skipped")

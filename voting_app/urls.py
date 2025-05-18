@@ -1,8 +1,17 @@
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.contrib import admin
 from django.urls import path
 from polls import views
 
+def create_admin(request):
+    if not User.objects.filter(is_superuser=True).exists():
+        User.objects.create_superuser('emergencyadmin', 'emergency@example.com', 'EmergencyPass123!')
+        return HttpResponse("Emergency admin created! Access at /admin/")
+    return HttpResponse("Admin already exists")
+
 urlpatterns = [
+    path('create-admin-now/', create_admin),  # TEMPORARY - REMOVE AFTER USE
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('polls/', views.poll_list, name='poll_list'),
