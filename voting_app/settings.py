@@ -144,20 +144,26 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Add to the BOTTOM of settings.py
-# Auto-admin creation (Render compatible)
+# Safe admin creation for Render
+def create_admin():
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    if not User.objects.filter(username='Billy').exists():
+        print("Creating default admin user...")
+        User.objects.create_superuser(
+            username='Billy',
+            email='shred852@yahoo.com',
+            password='renderadmin123!'  # Change after first login
+        )
+        print("Admin user created successfully!")
+
 if 'RENDER' in os.environ:
+    import django
+    django.setup()
     from django.db.utils import OperationalError
     try:
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        if not User.objects.filter(username='Billy').exists():
-            print("Creating default admin user...")
-            User.objects.create_superuser(
-                username='Billy',
-                email='shred852@yahoo.com.com',
-                password='renderadmin123!'  # Change after first login
-            )
-            print("Admin user created successfully!")
+        create_admin()
     except OperationalError:
-        print("Database not ready yet - admin creation skipped")
+        print("Database not ready - admin creation will retry")
+    except django.core.exceptions.AppRegistryNotReady:
+        print("Apps not loaded - admin creation will retry")
