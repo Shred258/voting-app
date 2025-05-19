@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
@@ -11,22 +12,27 @@ def home(request):
     return render(request, 'polls/home.html')
 
 def user_login(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        
         user = authenticate(request, username=username, password=password)
-        if user is not None:
+        if user:
             login(request, user)
-            messages.success(request, f"Welcome back, {username}!")
-            return redirect('poll_list')
-        else:
-            messages.error(request, "Invalid username or password")
-    return render(request, 'polls/login.html')
+            return JsonResponse({
+                'status': 'success',
+                'sessionid': request.session.session_key
+            })
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid credentials'
+        }, status=400)
 
 def user_logout(request):
     logout(request)
-    messages.success(request, "You have been logged out.")
-    return redirect('home')
+    response = JsonResponse({'status': 'success'})
+    response.delete_cookie('render_sessionid')
+    return response
 
 def register(request):
     if request.method == 'POST':

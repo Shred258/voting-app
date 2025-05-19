@@ -98,7 +98,8 @@ DATABASES = {
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=True,
+        default=os.environ.get('DATABASE_URL')
     )
 
 # Password validation
@@ -167,3 +168,20 @@ if 'RENDER' in os.environ:
         print("Database not ready - admin creation will retry")
     except django.core.exceptions.AppRegistryNotReady:
         print("Apps not loaded - admin creation will retry")
+        
+        
+# Authentication
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+# Sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_NAME = "render_sessionid"  # Distinct from local dev
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_SAVE_EVERY_REQUEST = True
+
+# For Render
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+SESSION_COOKIE_DOMAIN = '.onrender.com'
+SESSION_COOKIE_SECURE = True

