@@ -89,8 +89,13 @@ WSGI_APPLICATION = 'voting_app.wsgi.application'
 # For local SQLite fallback (development only)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+       
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -185,3 +190,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 SESSION_COOKIE_DOMAIN = '.onrender.com'
 SESSION_COOKIE_SECURE = True
+
+LOGIN_URL = '/login/'  # Point to your actual login URL
+LOGIN_REDIRECT_URL = '/polls/'  # Where to redirect after login
+LOGOUT_REDIRECT_URL = '/'  # Where to redirect after logout
